@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       https://camel.apache.org/schema/spring/camel-spring-2.23.3.xsd">
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <json id="tojson" library="Jackson"/>
+        </dataFormats>
+        <route id="simple-route">
+            <from id="_to2" uri="restlet:http://localhost:7001/getFromPrimeDB"/>
+            <setBody id="route-setBody">
+                <constant>SELECT * FROM SA.MAIN_CLIENT_IDENTIFIERS where pscu_id = 663</constant>
+            </setBody>
+            <to id="_to1" uri="jdbc:oracle-ds"/>
+            <marshal id="_marshal1" ref="tojson"/>
+        </route>
+    </camelContext>
+    <bean class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close" id="oracle-ds">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@//DB_Server_host_name:15210/WPR014D"/>
+        <property name="username" value="uid"/>
+        <property name="password" value="pwd"/>
+        <!--property name="maxActive" value="200"/>
+        <property name="poolPreparedStatements" value="true"/-->
+    </bean>
+</beans>
